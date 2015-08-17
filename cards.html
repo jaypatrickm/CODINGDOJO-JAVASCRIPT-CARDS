@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+<script src = "jquery-2.1.3.min.js"></script>
+  <script>
+
+  function Deck(){
+    var self = this;
+    this.deck = [];
+  }
+
+  Deck.prototype.Card = function(value, suit, card_image){
+    this.value = value;
+    this.suit = suit;
+    this.img = card_image
+    switch (this.value){
+      case 1:
+        this.name = "Ace"
+      break;
+      case 2:
+        this.name = "two"
+      break;
+      case 3:
+        this.name = "three"
+      break;
+      case 4:
+        this.name = "four"
+      break;
+      case 5:
+        this.name = "five"
+      break;
+      case 6:
+      this.name = "six"
+      break;
+      case 7:
+      this.name = "seven"
+      break;
+      case 8:
+      this.name = "eight"
+      break;
+      case 9:
+      this.name = "nine"
+      break;
+      case 10:
+      this.name = "ten"
+      break;
+      case 11:
+      this.name = "Jack"
+      break;
+      case 12:
+      this.name = "Queen"
+      break;
+      case 13:
+      this.name = "King"
+      break;
+    }
+  }
+
+  Deck.prototype.build_deck = function(){
+      for (var i = 0; i < 52; i ++){
+        switch(Math.floor(i/13)){
+          case 0:
+          this.deck.push(new this.Card((i%13)+1, "hearts","cards_gif/h"+((i%13)+1)+".gif"));
+          break;
+          case 1:
+          this.deck.push(new this.Card((i%13)+1, "diamonds","cards_gif/d"+((i%13)+1)+".gif"));
+          break;
+          case 2:
+          this.deck.push(new this.Card((i%13)+1, "clubs","cards_gif/c"+((i%13)+1)+".gif"));
+          break;
+          case 3:
+          this.deck.push(new this.Card((i%13)+1, "spades","cards_gif/s"+((i%13)+1)+".gif"));
+          break;
+        }
+      }
+      return this;
+  }
+
+  Deck.prototype.shuffle= function(){
+    var shuffledDeck = [];
+    for (var i = this.deck.length-1; i >= 0; i --){
+      var myCard = Math.floor(Math.random()*this.deck.length);
+      shuffledDeck.push(this.deck[myCard]);
+      this.deck.splice(myCard,1);
+    }
+    this.deck = shuffledDeck;
+    return this;
+  }
+
+  Deck.prototype.deal=function(){
+    var myCard = this.deck[this.deck.length-1];
+    this.deck.pop();
+    return myCard;
+  }
+
+
+   function Player(name,adeck){
+     this.name = name;
+     this.hand = [];
+     this.deck = adeck;
+     this.discard = function(index){
+       this.hand.splice(index,1);
+    }
+     this.draw = function(deck){
+       this.hand.push(this.deck.deal());
+       return this;
+      }
+  }
+
+  function deal_blackjack(players,dealer){
+        var initial_hand = 2;
+        for (var i = 0;i < players.length; i ++){
+          for (var j = 0; j<initial_hand; j ++){
+          players[i].draw();
+          }
+        }
+        for (var j = 0;j<initial_hand; j++){
+          dealer.draw();
+        }
+  }
+
+  function build_blackjack_board(anArray){
+    console.log(anArray[0].name);
+    var html = "";
+      for (var i = anArray.length; i >= 0; i --){
+        if (i === anArray.length){
+          html += "<div id = 'dealer'></div>";
+        }
+        // else {(console.log(anArray[i]));}
+        else {html +="<div class ='player' id = "+anArray[i].name+"></div>";}
+      }
+      $('body').html(html);
+  }
+
+
+  function start_blackjack(names){
+    var new_deck = new Deck();
+    new_deck.build_deck();
+    new_deck.shuffle();
+    new_deck.deal();
+
+    var players = [];
+
+    for (var i = 0; i<names.length;i ++){
+      players.push(new Player(names[i],new_deck));
+    }
+    var dealer = new Player("Alan",new_deck);
+    deal_blackjack(players,dealer);
+
+    build_blackjack_board(players);
+
+    for (var i = 0;i < players.length; i ++){
+//console.log(players[i].hand[0].img);
+        $('#'+players[i].name).append("<img src ="+players[i].hand[0].img+" alt = ''>");
+    }
+  }
+  $(document).ready(function(){
+    start_blackjack(["mike","josh","jay"]);
+  });
+  </script>
+
+
+</head>
+<body>
+
+</body>
+</html>
